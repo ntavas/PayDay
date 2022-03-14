@@ -1,0 +1,294 @@
+@startuml
+
+package Controller #C1A387{
+    class Controller{
+    --Attributes--
+    -final Random random;
+    -final Player1 player1;
+    -final Player2 player2;
+    -final Board board;
+    -final GraphicUI view;
+    -int loanRequest;
+    -Tile currentTile;
+    --Operations--
+    +Controller();
+    +void startGame();
+    -boolean isGameOver();
+    -String giveStartingTurn();
+    -boolean bothPlayersReachedPayDay();
+    -void checkGame();
+    -void declareWinner();
+    -void observeCryptoStatus(Player player);
+    -void checkBalance(Player player, int maxAmount);
+    -void spectateFootballMatch(Player player);
+    -void radioCompetition(Player player);
+    -void analyseTile(Tile current,Player player);
+    -void analyseMailCard(MailCard card, Player player);
+    -void playSound(String soundName);
+    -class RollDiceListener implements ActionListener
+    -class LoanListener implements ActionListener
+    -class EndTurnListener implements ActionListener
+    -class CardListener implements ActionListener
+    -class MyDealCardsListener implements ActionListener
+    }
+}
+
+package Model #C1A387{
+    class Board{
+        --Attributes--
+        -ArrayList<Tile> boardTiles;
+        -ArrayList<DealCard> dealCards;
+        -final ArrayList<DealCard> disposedDealCards;
+        -ArrayList<MailCard> mailCards;
+        -final ArrayList<MailCard> disposedMailCards;
+        -int jackpotPrize;
+        -int months;
+        -Path path;
+        -final Random random;
+        --Operations--
+        +Board(int months);
+        +void readBoardTiles();
+        +void readMailCards();
+        +void readDealCards();
+        +ArrayList<Tile> getBoardTiles();
+        +public int getMonths();
+        +public int getJackpotPrize();
+        +void addMoneyToJackpot(int amount);
+        +DealCard getNewDealCard();
+        +MailCard getNewMailCard();
+        +void disposeCard(Card card);
+        +int getClosestBuyerDealPosition(int currentPosition);
+        +void shuffleTiles();
+        +void setJackpotPrize(int amount);
+        +void deductMonth();
+        -int getIndexOfStart();
+        -int getIndexOfPayDay();
+        -void initialisePayDayAndStartTiles();
+    }
+    class Player{
+        --Attributes--
+        -final String name;
+        -int money;
+        -int loan;
+        -int bills;
+        -int dice;
+        -boolean rolledDice;
+        -boolean turn;
+        -boolean onBuyerTile;
+        -boolean reachedPayDayPosition;
+        -int position;
+        -final ArrayList<DealCard> dealCards;
+        -int mailCardsToTake;
+        -boolean takeDealCard;
+        -final Random random;
+        -static final int MAX_DICE_ROLL = 6;
+        -static final int MIN_DICE_ROLL = 1;
+        --Operations--
+        +Player(String name, int money, int loan, int bills);
+        +void setMoney(int money);
+        +void setLoan(int loan);
+        +void setBills(int bills);
+        +void setDice(int dice);
+        +void setTurn(boolean hasTurn);
+        +void setPosition(int position);
+        +void setRolledDice(boolean rolled);
+        +void addDealCard(DealCard card);
+        +void setMailCardsToTake(int mailCardsToTake);
+        +void setTakeDealCard(boolean takeDealCard);
+        +void setOnBuyerTile(boolean isOn);
+        +void setReachedPayDayPosition(boolean reachedPayDayPosition);
+        +int getMoney();
+        +int getLoan();
+        +int getBills();
+        +String getName();
+        +int getPosition();
+        +ArrayList<DealCard> getDealCards();
+        +int rollDice();
+        +void addMoney(int money);
+        +void deductMoney(int money);
+        +void addLoan(int loan);
+        +void deductLoan(int loan);
+        +void addBills(int bills);
+        +void deductBills(int bills);
+        +void deductMailCard();
+        +boolean hasTurn();
+        +void movePawn(int diceRoll);
+        +boolean hasRolledDice();
+        +int getDice();
+        +int getAmountOfMailCardsToTake();
+        +boolean canTakeDealCard();
+        +boolean isOnBuyerTile();
+        +boolean hasReachedPayDayPosition();
+        +boolean isStillActive();
+        +void goToTile(int position);
+        +void disposeDealCard(DealCard card);
+    }
+
+    class Player1{
+        --Operations--
+        +Player1(String name, int money, int loan, int bills);
+    }
+
+    class Player2{
+        --Operations--
+        +Player2(String name, int money, int loan, int bills);
+    }
+
+
+    class DealCard {
+        --Attributes--
+        -int buyCost;
+        -int saleCost;
+        -String iconPath;
+        -String message;
+        -String choice1;
+        -String choice2;
+        --Operations--
+        +void setBuyCost(String cost);
+        +void setSaleCost(String saleValue);
+        +void setChoiceMessage(String choiceMessage);
+        +void setChoiceMessage2(String message);
+        +void setIconPath(String path);
+        +void setCardMessage(String message);
+        +int getBuyCost();
+        +int getSaleCost();
+        +String getIconPath();
+        +String getMessage();
+        +String getChoice1();
+        +String getChoice2();
+    }
+
+    class MailCard {
+        --Attributes--
+        -String type;
+        -String iconPath;
+        -String message;
+        -String choiceMessage;
+        -int cost;
+        --Operations--
+        +void setType(String type);
+        +setIconPath(String path);
+        +void setCardMessage(String message);
+        +void setChoiceMessage(String choiceMessage);
+        +void setCost(String cost);
+        +String getType();
+        +String iconPath();
+        +String getMessage();
+        +String getChoiceMessage();
+        +int getCost();
+    }
+    interface Card{
+        +void setIconPath(String path);
+        +void setCardMessage(String message);
+        +void setChoiceMessage(String choiceMessage);
+    }
+
+
+    class Tile{
+        --Attributes--
+        -private final String sType;
+        -private final String imagePath;
+        --Operations--
+        +Tile(String sType, String imagePath);
+        +String getSType();
+        +String getImagePath();
+    }
+}
+
+package View #C1A387{
+    class GraphicUI{
+        --Attributes--
+        -JButton player1RollDice;
+        -JButton player1MyDealCards;
+        -JButton player1GetLoan;
+        -JButton player1EndTurn;
+        -JButton player2RollDice;
+        -JButton player2MyDealCards;
+        -JButton player2GetLoan;
+        -JButton player2EndTurn;
+        -JButton getDealCard;
+        -JButton getMailCard;
+        -int currentCard = 0;
+        -JLabel[] days;
+        -JLabel player1DiceImage;
+        -JLabel player2DiceImage;
+        -JLabel jackpotPrize;
+        -JLabel[] imagesPosition;
+        -JLabel player1Name;
+        -JLabel player1Money;
+        -JLabel player1Loan;
+        -JLabel player1Bills;
+        -JLabel player2Name;
+        -JLabel player2Money;
+        -JLabel player2Loan;
+        -JLabel player2Bills;
+        -JLabel bluePawn;
+        -JLabel yellowPawn;
+        -JPanel player1Card;
+        -JPanel player2Card;
+        -JTextArea infobox;
+        -final ClassLoader cldr;
+        -JLayeredPaneExtension mainPanel;
+        --Operations--
+       +GraphicUI();
+       +void initButtons();
+       +void initBoardTiles(ArrayList<Tile> boardImages);
+       +void initDays();
+       +void initPlayerCards(String player_One_Name, String player_Two_Name, int money, int loan, int bills);
+       +void initPawns();
+       +void initDiceImage(String diceImagePath);
+       +void initInfoBox(String message);
+       +void initJackpot(int prize);
+       +void updateBoardTiles(ArrayList<Tile> newMonthBoardTiles);
+       +void updatePlayerCard(Player player, int money, int loan, int bills);
+       +void updateDiceImage(Player player, int dice);
+       +void updateInfoBox(String message);
+       +void updateJackpotPrize(int prize);
+       +int openLoanDialog();
+       +boolean sundayFootball(int position);
+       +int betOnFootballMatch();
+       +boolean cryptoThursday(int position);
+       +int betOnCrypto();
+       +Tile updatePawn(Player player, int positionToMovePawn, int positionOfSecondPawn, ArrayList<Tile> Tiles);
+       +void resetPawns();
+       +String readPlayersName(String player);
+       +int enterMonthsToPlay();
+       +void displayMessageThrowWindow(String message, int amount);
+       +int lotteryChooseNumber(String player, int number);
+       +int loanRepayment(int amount);
+       +public int openLoanDialog(int amount);
+       +int openLoanDialogForCard(int amount);
+       +int showDealCard(DealCard card);
+       +void showMailCard(MailCard card);
+       +void showMyDealCards(ArrayList<DealCard> dealCards);
+       +void showWinner(Player player);
+       +String chooseDealCardToSell(ArrayList<DealCard> dealCards);
+       +void addRollDiceListener(ActionListener roll);
+       +void addMyDealCardsActionListener(ActionListener getDealCards);
+       +void addGetLoanListener(ActionListener loan);
+       +void addEndTurnListener(ActionListener endTurn);
+       +void addCardListener(ActionListener cardListener);
+    }
+
+    class JLayeredPaneExtension{
+        --Attributes--
+        -Image image;
+        --Operations--
+        +JLayeredPaneExtension(Image image);
+        +void paintComponent(Graphics g);
+    }
+}
+Controller -left--> GraphicUI : Has an instant to display Graphics
+Controller -right--> Player : Has two
+Controller --> Board : Main Board
+Board --|> Tile : Has a table of
+Board -up--|> MailCard : Has an array
+Board -up--|> DealCard : Has an array
+Player --> DealCard : Has his own
+GraphicUI -down-> JLayeredPaneExtension : To set background
+Player1 --|> Player : extends
+Player2 --|> Player : extends
+DealCard -left..> Card : implements
+MailCard -right..> Card : implements
+
+@enduml
